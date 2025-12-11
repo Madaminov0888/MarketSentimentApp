@@ -101,12 +101,12 @@ struct WatchlistRowView: View {
 
                             Capsule()
                                 .fill(Color(hex: "FF7A2D"))
-                                .frame(width: progressWidth(for: newsBuzzPercent(details: details)), height: 10)
+                                .frame(width: progressWidth(for: Double(newsBuzzPercent(details: details))), height: 10)
                                 .mask(Capsule())
                         }
                         .frame(width: 160, height: 10)
 
-                        Text(details.newsBuzz)
+                        Text("\(newsBuzzPercent(details: details))%")
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundColor(.white)
                     }
@@ -123,8 +123,8 @@ struct WatchlistRowView: View {
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.cardBorder, lineWidth: 1))
     }
     
-    func newsBuzzPercent(details: StockDetailsModel) -> Double {
-        Double(details.newsBuzz.replacingOccurrences(of: "%", with: "")) ?? 0.0
+    func newsBuzzPercent(details: StockDetailsModel) -> Int {
+        Int((Double(details.newsBuzz) ?? 0.0) * 100)
     }
     
     private func progressWidth(for percent: Double) -> CGFloat {

@@ -74,6 +74,7 @@ struct DashboardView: View {
                     ForEach(watchlistVM.savedStocks, id: \.self) { stock in
                         NavigationLink(value: stock) {
                             WatchlistRowView(stockTicker: stock)
+                                .padding()
                         }
                         .buttonStyle(.plain)
                     }

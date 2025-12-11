@@ -227,11 +227,6 @@ struct NewsView: View {
     // MARK: - Sentiment Badge
     @ViewBuilder
     private func sentimentBadge(for article: NewsModel) -> some View {
-        // Since NewsModel doesn't carry sentiment, we infer in previews by keywords.
-        let titleLower = article.title.lowercased()
-        let bullishKeywords = ["surge", "revenue", "boost", "revolutionary", "expand", "gains"]
-        let bearishKeywords = ["challenge", "delay", "drop", "decline", "concern", "cut"]
-        
         let isBullish = article.sentiment == "Bullish"
         let isBearish = article.sentiment == "Bearish"
         

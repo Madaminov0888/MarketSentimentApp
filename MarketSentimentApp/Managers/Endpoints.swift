@@ -151,8 +151,6 @@ enum Endpoint {
             throw URLError(.badURL)
         }
         
-        print("url: ", finalURL.absoluteString)
-        
         var request = URLRequest(url: finalURL)
         request.httpMethod = method.rawValue
         headers().forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }

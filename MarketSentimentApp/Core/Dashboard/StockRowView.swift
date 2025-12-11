@@ -73,7 +73,7 @@ struct StockRowView: View {
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color(.sRGB, white: 0.04))
+                .fill(Color.cardBackground)
                 .shadow(color: Color.black.opacity(0.35), radius: 6, x: 0, y: 4)
         )
         .task {

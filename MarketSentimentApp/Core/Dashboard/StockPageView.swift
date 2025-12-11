@@ -404,7 +404,9 @@ struct NewsSentimentCard: View {
 
 private struct RecentNewsList: View {
     let recentNews: [NewsModel]
-
+    
+    
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Recent News (\(recentNews.count))")
@@ -412,8 +414,131 @@ private struct RecentNewsList: View {
                 .font(.headline)
 
             ForEach(Array(recentNews.enumerated()), id: \.offset) { _, item in
-                NewsRow(title: item)
+                articleRow(item)
             }
+        }
+    }
+    
+    private func relativeTime(from date: Date) -> String {
+        let now = Date()
+        let seconds = Int(now.timeIntervalSince(date))
+        if seconds < 60 { return "\(seconds)s ago" }
+        if seconds < 3600 { return "\(seconds / 60)m ago" }
+        if seconds < 86400 { return "\(seconds / 3600)h ago" }
+        let days = seconds / 86400
+        return days == 1 ? "1 day ago" : "\(days)d ago"
+    }
+    
+    
+    @ViewBuilder
+    private func articleRow(_ article: NewsModel) -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 10) {
+                // ticker badge
+                NavigationLink(value: article.ticker) {
+                    Text("$\(article.ticker)")
+                        .font(.caption2.weight(.semibold))
+                        .padding(.vertical, 6)
+                        .padding(.horizontal, 8)
+                        .background(RoundedRectangle(cornerRadius: 6).fill(Color.blue.opacity(0.12)))
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
+                
+                // title
+                Text(article.title)
+                    .font(.headline)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                // excerpt
+                Text(article.content)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                
+                HStack(spacing: 8) {
+                    Text(article.source)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("•")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(relativeTime(from: article.date))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            // sentiment badge on right
+            VStack {
+                sentimentBadge(for: article)
+                Spacer()
+                
+                Group {
+                    if let url = URL(string: article.link) {
+                        Link(destination: url) {
+                            HStack {
+                                Text("Read")
+                                
+                                Image(systemName: "arrow.up.forward.square.fill")
+                            }
+                            .font(.headline)
+                        }
+                    } else {
+                        Text("Read")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.bottom)
+                .tint(.accentColor)
+            }
+            .padding(.top, 8)
+            .padding(.trailing, 8)
+        }
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.tertiarySystemFill)))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.secondary.opacity(0.06)))
+    }
+
+    
+    @ViewBuilder
+    private func sentimentBadge(for article: NewsModel) -> some View {
+        let isBullish = article.sentiment == "Bullish"
+        let isBearish = article.sentiment == "Bearish"
+        
+        if isBullish {
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.up.right")
+                Text(SentimentScore.bullish.sentimentString)
+                    .font(.caption2).bold()
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .background(RoundedRectangle(cornerRadius: 8).fill(Color.green.opacity(0.12)))
+            .foregroundColor(.green)
+        } else if isBearish {
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.down.left")
+                Text(SentimentScore.bearish.sentimentString)
+                    .font(.caption2).bold()
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .background(RoundedRectangle(cornerRadius: 8).fill(Color.red.opacity(0.08)))
+            .foregroundColor(.red)
+        } else {
+            HStack(spacing: 6) {
+                Image(systemName: "minus")
+                Text(SentimentScore.neutral.sentimentString)
+                    .font(.caption2).bold()
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .background(RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.09)))
+            .foregroundColor(.secondary)
         }
     }
 }
